@@ -21,7 +21,7 @@ func main() {
 	t0 := time.Now()
 	out := qframe.ReadCSV(file, csv.Delimiter(delimiter))
 	fmt.Println(time.Since(t0))
-	qf := out.Filter(qframe.Filter{Column: "ISS_INST", Arg: 1001, Comparator: "="})
+	qf := out.Filter(qframe.Filter{Column: "ISS_INST", Arg: 1002, Comparator: "="})
 	f := excelize.NewFile()
 	named := qf.ColumnTypeMap()
 	f.NewSheet("Dataset")
