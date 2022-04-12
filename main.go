@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-	file, err := os.Open("acq_trans.csv")
+	file, err := os.Open("iss_trans.csv")
 	if err != nil {
 		check(err)
 	}
@@ -76,9 +76,14 @@ func get_action(value int) string {
 	return "Rejected"
 }
 
-func To_Excel(qf qframe.QFrame, inst int) {
-	qf = qf.Filter(qframe.Filter{Column: "ACQ_INST", Arg: inst, Comparator: "="})
+func To_Excel(frame qframe.QFrame, inst int) {
+	qf := frame.Filter(qframe.Filter{Column: "ACQ_INST", Arg: inst, Comparator: "="})
 	if qf.Err != nil {
+		check(qf.Err)
+	}
+	//qf = qf.GroupBy(groupby.Co)
+	qfi := frame.Filter(qframe.Filter{Column: "ISS_INST", Arg: inst, Comparator: "="})
+	if qfi.Err != nil {
 		check(qf.Err)
 	}
 	outfile := fmt.Sprintf("template/template_%d.xlsx", inst)
@@ -87,11 +92,11 @@ func To_Excel(qf qframe.QFrame, inst int) {
 	f.DeleteSheet("Dataset")
 	f.NewSheet("Dataset")
 	named := qf.ColumnTypeMap()
-	c := 'A'
+	a := 'A'
 	last := ""
 	response := get_response()
 	for _, col := range qf.ColumnNames() {
-		err := f.SetCellValue("Dataset", fmt.Sprintf("%c1", c), col)
+		err := f.SetCellValue("Dataset", fmt.Sprintf("%c1", a), col)
 		if err != nil {
 			panic(err)
 		}
@@ -100,7 +105,7 @@ func To_Excel(qf qframe.QFrame, inst int) {
 			view := qf.MustStringView(col)
 			for i := 0; i < view.Len(); i++ {
 				value := view.ItemAt(i)
-				err := f.SetCellValue("Dataset", fmt.Sprintf("%c%d", c, i+2), *value)
+				err := f.SetCellValue("Dataset", fmt.Sprintf("%c%d", a, i+2), *value)
 				if err != nil {
 					panic(err)
 				}
@@ -109,41 +114,41 @@ func To_Excel(qf qframe.QFrame, inst int) {
 			view := qf.MustIntView(col)
 			for i := 0; i < view.Len(); i++ {
 				value := view.ItemAt(i)
-				err := f.SetCellValue("Dataset", fmt.Sprintf("%c%d", c, i+2), value)
+				err := f.SetCellValue("Dataset", fmt.Sprintf("%c%d", a, i+2), value)
 				if err != nil {
 					panic(err)
 				}
 			}
 			if col == "RESP" {
-				c++
-				err := f.SetCellValue("Dataset", fmt.Sprintf("%c1", c), "ACTION")
+				a++
+				err := f.SetCellValue("Dataset", fmt.Sprintf("%c1", a), "ACTION")
 				if err != nil {
 					panic(err)
 				}
 				for i := 0; i < view.Len(); i++ {
 					value := view.ItemAt(i)
-					err := f.SetCellValue("Dataset", fmt.Sprintf("%c%d", c, i+2), get_action(value))
+					err := f.SetCellValue("Dataset", fmt.Sprintf("%c%d", a, i+2), get_action(value))
 					if err != nil {
 						panic(err)
 					}
 				}
-				c++
-				err = f.SetCellValue("Dataset", fmt.Sprintf("%c1", c), "REJECTED_TYPE")
+				a++
+				err = f.SetCellValue("Dataset", fmt.Sprintf("%c1", a), "REJECTED_TYPE")
 				if err != nil {
 					panic(err)
 				}
 				for i := 0; i < view.Len(); i++ {
 					value := view.ItemAt(i)
-					err := f.SetCellValue("Dataset", fmt.Sprintf("%c%d", c, i+2), Get_desc(value, response))
+					err := f.SetCellValue("Dataset", fmt.Sprintf("%c%d", a, i+2), Get_desc(value, response))
 					if err != nil {
 						panic(err)
 					}
 				}
 			}
 		}
-		c++
+		a++
 	}
-	last = fmt.Sprintf("%c%d", c-1, qf.Len()+1)
+	last = fmt.Sprintf("%c%d", a-1, qf.Len()+1)
 	fmt.Println(last)
 	err = f.AddTable("Dataset", "A1", last, `{
 		"table_name": "acq_trans",
