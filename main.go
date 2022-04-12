@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-	file, err := os.Open("acq_trans.csv")
+	file, err := os.Open("iss_trans.csv")
 	if err != nil {
 		check(err)
 	}
