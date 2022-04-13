@@ -9,6 +9,7 @@ import (
 
 	"github.com/tobgu/qframe"
 	fcsv "github.com/tobgu/qframe/config/csv"
+	"github.com/tobgu/qframe/config/groupby"
 	"github.com/tobgu/qframe/types"
 	"github.com/xuri/excelize/v2"
 )
@@ -81,7 +82,7 @@ func To_Excel(frame qframe.QFrame, inst int) {
 	if qf.Err != nil {
 		check(qf.Err)
 	}
-	//qf = qf.GroupBy(groupby.Co)
+	qf = qf.GroupBy(groupby.Columns("YEAR", "MONTH", "ACQ_INST", "TRANS_CLASS", "TRANS_NAME", "TERMINAL_TYPE", "RESP", "ADDRESS_NAME", "REVERSAL", "GROUP_NET")).Aggregate(qframe.Aggregation{Fn: "sum", Column: "ACQ_AMOUNT"}, qframe.Aggregation{Fn: "sum", Column: "NB"})
 	qfi := frame.Filter(qframe.Filter{Column: "ISS_INST", Arg: inst, Comparator: "="})
 	if qfi.Err != nil {
 		check(qf.Err)
@@ -95,6 +96,10 @@ func To_Excel(frame qframe.QFrame, inst int) {
 	a := 'A'
 	last := ""
 	response := get_response()
+	if qf.Err != nil {
+		fmt.Println(qf)
+		os.Exit(0)
+	}
 	for _, col := range qf.ColumnNames() {
 		err := f.SetCellValue("Dataset", fmt.Sprintf("%c1", a), col)
 		if err != nil {
