@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/biter777/countries"
 	"github.com/tobgu/qframe"
 	fcsv "github.com/tobgu/qframe/config/csv"
 	"github.com/tobgu/qframe/config/groupby"
@@ -82,7 +83,7 @@ func To_Excel(frame qframe.QFrame, inst int) {
 	if qf.Err != nil {
 		check(qf.Err)
 	}
-	qf = qf.GroupBy(groupby.Columns("YEAR", "MONTH", "ACQ_INST", "TRANS_CLASS", "TRANS_NAME", "TERMINAL_TYPE", "RESP", "ADDRESS_NAME", "REVERSAL", "GROUP_NET")).Aggregate(qframe.Aggregation{Fn: "sum", Column: "ACQ_AMOUNT"}, qframe.Aggregation{Fn: "sum", Column: "NB"})
+	qf = qf.GroupBy(groupby.Columns("YEAR", "MONTH", "ACQ_INST", "TRANS_CLASS", "TRANS_NAME", "TERMINAL_TYPE", "RESP", "ADDRESS_NAME", "REVERSAL", "GROUP_NET", "COUNTRY_CODE")).Aggregate(qframe.Aggregation{Fn: "sum", Column: "ACQ_AMOUNT"}, qframe.Aggregation{Fn: "sum", Column: "NB"})
 	qfi := frame.Filter(qframe.Filter{Column: "ISS_INST", Arg: inst, Comparator: "="})
 	if qfi.Err != nil {
 		check(qf.Err)
@@ -119,6 +120,15 @@ func To_Excel(frame qframe.QFrame, inst int) {
 			view := qf.MustIntView(col)
 			for i := 0; i < view.Len(); i++ {
 				value := view.ItemAt(i)
+				if col == "COUNTRY_CODE" {
+					country := countries.ByNumeric(value)
+					countr := fmt.Sprintf("%v\n", country)
+					err := f.SetCellValue("Dataset", fmt.Sprintf("%c%d", a, i+2), countr)
+					if err != nil {
+						panic(err)
+					}
+					continue
+				}
 				err := f.SetCellValue("Dataset", fmt.Sprintf("%c%d", a, i+2), value)
 				if err != nil {
 					panic(err)
