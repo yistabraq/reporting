@@ -8,6 +8,7 @@ require (
 )
 
 require (
+	github.com/biter777/countries v1.3.4 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/klauspost/compress v1.15.1 // indirect
 	github.com/mauricelam/genny v0.0.0-20190320071652-0800202903e5 // indirect
