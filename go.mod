@@ -7,6 +7,8 @@ require (
 	github.com/xuri/excelize/v2 v2.5.0
 )
 
+require gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
+
 require (
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/klauspost/compress v1.15.1 // indirect
@@ -19,4 +21,5 @@ require (
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
 	golang.org/x/net v0.0.0-20210726213435-c6fcb2dbf985 // indirect
 	golang.org/x/text v0.3.6 // indirect
+	gopkg.in/mail.v2 v2.3.1
 )
