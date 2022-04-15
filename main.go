@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/biter777/countries"
 	"github.com/tobgu/qframe"
 	fcsv "github.com/tobgu/qframe/config/csv"
 	"github.com/tobgu/qframe/config/groupby"
@@ -28,7 +27,7 @@ func main() {
 	qf = qf.Apply(qframe.Instruction{Fn: update, SrcCol1: "REVERSAL", SrcCol2: "ACQ_AMOUNT", DstCol: "ACQ_AMOUNT"})
 	qf = qf.Apply(qframe.Instruction{Fn: update, SrcCol1: "REVERSAL", SrcCol2: "ISS_AMOUNT", DstCol: "ISS_AMOUNT"})
 	fmt.Println("Update reversal duration : ", time.Since(t0))
-	for _, v := range []int{1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1010, 1011, 1012, 1013} {
+	for _, v := range []int{1001, 1002, 1004, 1010, 1013, 1015} {
 		t0 = time.Now()
 		To_Excel(qf, v)
 		fmt.Printf("Duration write template %d: %v\n", v, time.Since(t0))
@@ -120,7 +119,7 @@ func To_Excel(frame qframe.QFrame, inst int) {
 			view := qf.MustIntView(col)
 			for i := 0; i < view.Len(); i++ {
 				value := view.ItemAt(i)
-				if col == "COUNTRY_CODE" {
+				/*if col == "COUNTRY_CODE" {
 					country := countries.ByNumeric(value)
 					countr := fmt.Sprintf("%v\n", country)
 					err := f.SetCellValue("Dataset", fmt.Sprintf("%c%d", a, i+2), countr)
@@ -128,7 +127,7 @@ func To_Excel(frame qframe.QFrame, inst int) {
 						panic(err)
 					}
 					continue
-				}
+				}*/
 				err := f.SetCellValue("Dataset", fmt.Sprintf("%c%d", a, i+2), value)
 				if err != nil {
 					panic(err)
@@ -179,7 +178,6 @@ func To_Excel(frame qframe.QFrame, inst int) {
 	if err := f.SaveAs(outfile); err != nil {
 		fmt.Println(err)
 	}
-	os.Exit(0)
 }
 func update(a, b int) int {
 	if a == 1 {
